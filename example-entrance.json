@@ -1,0 +1,66 @@
+{
+  "name": "entrance-example",
+  "routers": [
+    {
+      //服务端资源回源
+      "serverName": "source,res.*",
+      "staticServers": [
+        {
+          "locationUri": "/",
+          "host": "localhost"
+        }
+      ]
+    },
+    {
+      //服务端资源其实是cdn, 线上系统不应该被访问
+      "serverName": "res.*",
+      "staticServers": [
+        {
+          "locationUri": "/",
+          "host": "localhost"
+        }
+      ]
+    },
+    {
+      //微信前端资源回源
+      "serverName": "source.front.*",
+      "staticServers": [
+        {
+          "locationUri": "/",
+          "host": "localhost"
+        }
+      ]
+    },
+    {
+      //微信前端资源, 其他地址302到cdn
+      "serverName": "front.*",
+      "staticServers": [
+        {
+          "locationUri": "= /",
+          "host": "localhost"
+        },
+        {
+          "locationUri": "= ",
+          "host": "localhost"
+        },
+        {
+          "locationUri": "= /index.html",
+          "host": "localhost"
+        },
+        {
+          "locationUri": "/",
+          "preBlock":"rewrite ^(.+)$ $scheme://source.$host$uri;",
+          "host": "localhost"
+        }
+      ],
+      "apiServers": [
+        {
+          "host": "localhost",
+          "apiServerHost": "csm.lmjia.cn",
+          "projectId": "shopping-beauty",
+          "branch": "master"
+        }
+      ]
+    }
+  ]
+}

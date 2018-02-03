@@ -1,0 +1,15 @@
+{
+  "name": "test_bl_2",
+  "routers": [
+    {
+      "serverName": "localhost",
+      "certificateName":"host",
+      "apiServers": [
+        {
+          "host": "localhost",
+          "localApiFile": ""
+        }
+      ]
+    }
+  ]
+}

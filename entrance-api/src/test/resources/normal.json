@@ -1,0 +1,14 @@
+{
+  "name": "test_bl_0",
+  "routers": [
+    {
+      "serverName": "localhost",
+      "apiServers": [
+        {
+          "host": "localhost",
+          "localApiFile": ""
+        }
+      ]
+    }
+  ]
+}

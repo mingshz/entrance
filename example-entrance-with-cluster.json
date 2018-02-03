@@ -1,0 +1,29 @@
+{
+  "name": "entrance-example",
+  "clusters": [
+    {
+      "name": "app1",
+      "targets": [
+        {
+          "host": "localhost",
+          "port": 8080
+        }
+      ]
+    }
+  ],
+  "routers": [
+    {
+      "serverName": "localhost",
+      "apiServers": [
+        {
+          "host": "localhost",
+          "clusterName": "app1",
+          "ssl": false,
+          "apiServerHost": "csm.lmjia.cn",
+          "projectId": "shopping-beauty",
+          "branch": "master"
+        }
+      ]
+    }
+  ]
+}

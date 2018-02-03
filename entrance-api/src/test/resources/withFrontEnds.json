@@ -1,0 +1,20 @@
+{
+  "name": "test_bl_1",
+  "routers": [
+    {
+      "serverName": "localhost",
+      "apiServers": [
+        {
+          "host": "localhost",
+          "localApiFile": ""
+        }
+      ],
+      "staticServers": [
+        {
+          "locationUri": "/editor",
+          "host": "new"
+        }
+      ]
+    }
+  ]
+}
