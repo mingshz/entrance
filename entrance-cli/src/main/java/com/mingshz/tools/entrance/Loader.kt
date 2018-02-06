@@ -13,11 +13,11 @@ import java.io.IOException
  */
 class Loader {
     @Throws(IOException::class, InterruptedException::class)
-    private fun work(workingDir: File, entrance: Entrance) {
+    private fun work(workingDir: File, entrance: Entrance, config: Config) {
         // 形成Entrance的结构
         System.exit(DockerFileBuilder.create()
                 .forEntrance(entrance)
-                .build(workingDir, workingDir))
+                .build(config, workingDir, workingDir))
     }
 
     fun main(args: Array<String>) {
@@ -29,6 +29,7 @@ class Loader {
         options.addOption("wd", true, "working dir(default CWD).")
         options.addOption("f", true, "json file for build(default entrance.json).")
         options.addOption("v", "display this help.")
+        options.addOption("ngrok", "enable ngrok, use name=host(ngrok); example: .. -ngrok server=d4bcb5b8.ngrok.io")
 
         val parser = DefaultParser()
         val cmd = parser.parse(options, args)
@@ -51,15 +52,23 @@ class Loader {
         else
             "./"
 
+        val config = Config()
+        if (cmd.hasOption("ngrok")){
+            val data = cmd.getOptionValue("ngrok").split("=")
+            config.ngrokFrom = data[0]
+            config.ngrokTo = data[1]
+        }
+
+
         FileInputStream(fileName).use { fileInputStream ->
             val entrance = Utils.readFromJson(fileInputStream)
 
-            work(File(workingPath), entrance)
+            work(File(workingPath), entrance, config)
 
         }
     }
 }
 
-fun main(args: Array<String>){
+fun main(args: Array<String>) {
     Loader().main(args)
 }

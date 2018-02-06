@@ -35,7 +35,7 @@ public class BuildMojo extends AbstractEntranceMojo {
             getLog().info("working in " + workingDir);
             DockerFileBuilder.create()
                     .forEntrance(this)
-                    .build(getProject().getBasedir(), workingDir.toFile());
+                    .build(null, getProject().getBasedir(), workingDir.toFile());
         } catch (IOException e) {
             getLog().error(e);
             throw new MojoExecutionException("IO", e);

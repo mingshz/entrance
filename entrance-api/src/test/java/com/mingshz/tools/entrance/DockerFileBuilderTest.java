@@ -20,7 +20,7 @@ public class DockerFileBuilderTest extends TestBase {
         File working = new File("target");
         DockerFileBuilder.create()
                 .forEntrance(normalEntrance())
-                .build(null, working);
+                .build(null, null, working);
     }
 
     @Test
@@ -28,7 +28,7 @@ public class DockerFileBuilderTest extends TestBase {
         File working = new File("target");
         DockerFileBuilder.create()
                 .forEntrance(normalWithFrontEndsEntrance())
-                .build(null, working);
+                .build(null, null, working);
     }
 
     @Test
@@ -39,7 +39,7 @@ public class DockerFileBuilderTest extends TestBase {
 
         DockerFileBuilder.create()
                 .forEntrance(normalWithSSLEntrance())
-                .build(null, working);
+                .build(null, null, working);
     }
 
     private void copyCertificate(File dir) throws IOException {

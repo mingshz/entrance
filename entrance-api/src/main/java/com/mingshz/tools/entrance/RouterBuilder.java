@@ -6,8 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
@@ -26,12 +24,12 @@ import java.util.stream.StreamSupport;
  * @author CJ
  */
 public class RouterBuilder {
-    private Entrance entrance;
     private StringWriter httpWriter;
     private StringWriter httpsWriter;
     private File cwd;
     private Pattern uriPattern = Pattern.compile("\\{[a-zA-Z0-9-_]+}");
     private Router router;
+    private Config config;
 
     private RouterBuilder() {
     }
@@ -40,19 +38,20 @@ public class RouterBuilder {
         return new RouterBuilder();
     }
 
-    public RouterBuilder forEntrance(Router router, Entrance entrance) {
+    public RouterBuilder forEntrance(Router router) {
         this.router = router;
-        this.entrance = entrance;
         return this;
     }
 
     /**
+     * @param config
      * @param cwd    可选的运行目录
      * @param writer 输出目的
      * @throws IOException
      */
-    public void build(File cwd, Writer writer) throws IOException {
+    public void build(Config config, File cwd, Writer writer) throws IOException {
         this.cwd = cwd;
+        this.config = config;
         httpWriter = new StringWriter();
         if (router.getCertificateName() != null) {
             httpsWriter = new StringWriter();
@@ -145,9 +144,14 @@ public class RouterBuilder {
                 .anyMatch(type -> "ws".equalsIgnoreCase(type) || "wss".equalsIgnoreCase(type));
     }
 
+
     private void configProxyPass(Endpoint endpoint, String locationUri, boolean isWebSocket) throws IOException {
+        final boolean ngrok = config != null && config.getNgrokFrom() != null
+                && config.getNgrokFrom().equalsIgnoreCase(endpoint.getHost());
         final String target;
-        if (endpoint.getClusterName() != null) {
+        if (ngrok) {
+            target = config.getNgrokTo();
+        } else if (endpoint.getClusterName() != null) {
             target = endpoint.getClusterName();
         } else {
             final String host = endpoint.getHost();
@@ -157,7 +161,7 @@ public class RouterBuilder {
 
         writeAll(String.format("\tlocation %s {\n", locationUri));
         if (endpoint.getPreBlock() != null)
-            writeAll("\t\t"+endpoint.getPreBlock()+"\n");
+            writeAll("\t\t" + endpoint.getPreBlock() + "\n");
         if (isWebSocket)
             // https://nginx.org/en/docs/http/websocket.html
             // proxy_pass_request_headers      on;
@@ -172,18 +176,25 @@ public class RouterBuilder {
 //                    "\t\tproxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;\n" +
 //                    "\t\tproxy_set_header        Host $http_host;\n"+
 //                    "\t\tproxy_pass_request_headers on;\n", host, portSuffix));
-        else
-            writeAll(String.format("\t\tproxy_pass http://%s;\n" +
-                    "\t\tproxy_set_header        X-Real-IP $remote_addr;\n" +
-                    "\t\tproxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;\n" +
-                    "\t\tproxy_set_header        Host $http_host;\n", target));
+        else {
+            // 在ngrok模式下 它并不认可传递host和其他代理信息
+            if (!ngrok) {
+                writeAll(String.format("\t\tproxy_pass http://%s;\n" +
+                        "\t\tproxy_set_header        X-Real-IP $remote_addr;\n" +
+                        "\t\tproxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;\n" +
+                        "\t\tproxy_set_header        Host $http_host;\n", target));
+            } else {
+                writeAll(String.format("\t\tproxy_pass http://%s;\n", target));
+            }
+        }
+
 
         writeHttps("\t\tproxy_set_header        X-Client-Verify  SUCCESS;\n" +
                 "\t\tproxy_set_header        X-Client-DN      $ssl_client_s_dn;\n" +
                 "\t\tproxy_set_header        X-SSL-Subject    $ssl_client_s_dn;\n" +
                 "\t\tproxy_set_header        X-SSL-Issuer     $ssl_client_i_dn;\n");
         if (endpoint.getPostBlock() != null)
-            writeAll("\t\t"+endpoint.getPostBlock()+"\n");
+            writeAll("\t\t" + endpoint.getPostBlock() + "\n");
         writeAll("\t}\n");
     }
 

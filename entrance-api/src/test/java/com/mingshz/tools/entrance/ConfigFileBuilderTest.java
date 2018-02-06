@@ -16,7 +16,7 @@ public class ConfigFileBuilderTest extends TestBase {
         Entrance entrance = normalEntrance();
         ConfigFileBuilder.create()
                 .forEntrance(entrance)
-                .build(null, file);
+                .build(null, null, file);
 
     }
 }

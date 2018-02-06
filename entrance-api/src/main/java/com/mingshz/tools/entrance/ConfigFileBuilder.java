@@ -27,11 +27,13 @@ public class ConfigFileBuilder {
     }
 
     /**
+     *
+     * @param config
      * @param cwd  可选的运行目录
      * @param file 目标文件
      * @throws IOException
      */
-    public void build(File cwd, File file) throws IOException {
+    public void build(Config config, File cwd, File file) throws IOException {
 
 
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8"))) {
@@ -49,8 +51,8 @@ public class ConfigFileBuilder {
             if (entrance.getRouters() != null) {
                 for (Router router : entrance.getRouters()) {
                     RouterBuilder.create()
-                            .forEntrance(router, entrance)
-                            .build(cwd, writer);
+                            .forEntrance(router)
+                            .build(config, cwd, writer);
                 }
 
             }

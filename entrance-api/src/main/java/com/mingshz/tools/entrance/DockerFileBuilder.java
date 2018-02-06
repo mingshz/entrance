@@ -27,20 +27,22 @@ public class DockerFileBuilder {
     }
 
     /**
+     *
+     * @param config
      * @param cwd        运行目录
      * @param workingDir 工作目录，也就是会生成临时文件的一些目录
      * @return
      * @throws IOException
      * @throws InterruptedException
      */
-    public int build(File cwd, File workingDir) throws IOException, InterruptedException {
+    public int build(Config config, File cwd, File workingDir) throws IOException, InterruptedException {
         // 首先构造 /etc/nginx/conf.d/default.conf
         if (!workingDir.exists())
             if (!workingDir.mkdirs())
                 throw new IOException("failed to create folder:" + workingDir);
         ConfigFileBuilder.create()
                 .forEntrance(entrance)
-                .build(cwd, new File(workingDir, "default.conf"));
+                .build(config, cwd, new File(workingDir, "default.conf"));
         // 完成之后呢 开始构建docker
         try (OutputStreamWriter writer = new OutputStreamWriter(
                 new FileOutputStream(new File(workingDir, "Dockerfile")), Charset.forName("UTF-8"))) {
