@@ -178,14 +178,10 @@ public class RouterBuilder {
 //                    "\t\tproxy_pass_request_headers on;\n", host, portSuffix));
         else {
             // 在ngrok模式下 它并不认可传递host和其他代理信息
-            if (!ngrok) {
-                writeAll(String.format("\t\tproxy_pass http://%s;\n" +
-                        "\t\tproxy_set_header        X-Real-IP $remote_addr;\n" +
-                        "\t\tproxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;\n" +
-                        "\t\tproxy_set_header        Host $http_host;\n", target));
-            } else {
-                writeAll(String.format("\t\tproxy_pass http://%s;\n", target));
-            }
+            writeAll(String.format("\t\tproxy_pass http://%s;\n" +
+                    "\t\tproxy_set_header        X-Real-IP $remote_addr;\n" +
+                    "\t\tproxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;\n" +
+                    "\t\tproxy_set_header        Host $http_host;\n", target));
         }
 
 

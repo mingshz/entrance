@@ -29,7 +29,7 @@ class Loader {
         options.addOption("wd", true, "working dir(default CWD).")
         options.addOption("f", true, "json file for build(default entrance.json).")
         options.addOption("v", "display this help.")
-        options.addOption("ngrok", "enable ngrok, use name=host(ngrok); example: .. -ngrok server=d4bcb5b8.ngrok.io")
+        options.addOption("ngrok", true, "enable ngrok, use name=host(ngrok); example: .. -ngrok server=d4bcb5b8.ngrok.io")
 
         val parser = DefaultParser()
         val cmd = parser.parse(options, args)
@@ -53,7 +53,7 @@ class Loader {
             "./"
 
         val config = Config()
-        if (cmd.hasOption("ngrok")){
+        if (cmd.hasOption("ngrok")) {
             val data = cmd.getOptionValue("ngrok").split("=")
             config.ngrokFrom = data[0]
             config.ngrokTo = data[1]
